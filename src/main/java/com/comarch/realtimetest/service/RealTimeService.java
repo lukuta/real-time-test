@@ -10,6 +10,8 @@ import org.onebusway.gtfs_realtime.exporter.GtfsRealtimeMutableProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -29,35 +31,20 @@ public class RealTimeService {
     private static final Logger LOG = LoggerFactory.getLogger(RealTimeService.class);
 
     private ScheduledExecutorService executor;
-    private GtfsRealtimeMutableProvider gtfsRealtimeProvider;
-    private URL url = new URL("http://www3.septa.org/hackathon/TrainView/");
+    private GtfsRealtimeMutableProvider gtfsRealTimeProvider;
+
+    private URL url;
 
     /**
      * How often vehicle data will be downloaded, in seconds.
      */
-    private int refreshInterval = 30;
-
-    public RealTimeService() throws MalformedURLException {
-    }
+    @Value("${refresh.interval}")
+    private int refreshInterval;
 
     @Autowired
-    public void setGtfsRealtimeProvider(GtfsRealtimeMutableProvider gtfsRealtimeProvider) {
-        this.gtfsRealtimeProvider = gtfsRealtimeProvider;
-    }
-
-    /**
-     * @param url the URL for the SEPTA vehicle data API.
-     */
-    public void setUrl(URL url) {
-        this.url = url;
-    }
-
-    /**
-     * @param refreshInterval how often vehicle data will be downloaded, in
-     *                        seconds.
-     */
-    public void setRefreshInterval(int refreshInterval) {
-        this.refreshInterval = refreshInterval;
+    public RealTimeService(Environment env, GtfsRealtimeMutableProvider gtfsRealtimeProvider) throws MalformedURLException {
+        url = new URL(env.getProperty("gtfs.real-time.url"));
+        this.gtfsRealTimeProvider = gtfsRealtimeProvider;
     }
 
     /**
@@ -83,11 +70,11 @@ public class RealTimeService {
     }
 
     public GtfsRealtime.FeedMessage getVehiclePositions() {
-        return this.gtfsRealtimeProvider.getVehiclePositions();
+        return this.gtfsRealTimeProvider.getVehiclePositions();
     }
 
     public GtfsRealtime.FeedMessage getTripUpdates() {
-        return this.gtfsRealtimeProvider.getTripUpdates();
+        return this.gtfsRealTimeProvider.getTripUpdates();
     }
 
     /****
@@ -210,8 +197,8 @@ public class RealTimeService {
             /**
              * Build out the final GTFS-realtime feed messagse and save them.
              */
-            gtfsRealtimeProvider.setTripUpdates(tripUpdates.build());
-            gtfsRealtimeProvider.setVehiclePositions(vehiclePositions.build());
+            gtfsRealTimeProvider.setTripUpdates(tripUpdates.build());
+            gtfsRealTimeProvider.setVehiclePositions(vehiclePositions.build());
 
             LOG.info("vehicles extracted: " + tripUpdates.getEntityCount());
         }
