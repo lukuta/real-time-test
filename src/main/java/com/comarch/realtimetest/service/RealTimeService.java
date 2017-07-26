@@ -29,7 +29,7 @@ public class RealTimeService {
     private static final Logger LOG = LoggerFactory.getLogger(RealTimeService.class);
 
     private ScheduledExecutorService executor;
-    public GtfsRealtimeMutableProvider gtfsRealtimeProvider;
+    private GtfsRealtimeMutableProvider gtfsRealtimeProvider;
     private URL url = new URL("http://www3.septa.org/hackathon/TrainView/");
 
     /**
@@ -80,6 +80,14 @@ public class RealTimeService {
     public void stop() {
         LOG.info("stopping GTFS-realtime service");
         executor.shutdownNow();
+    }
+
+    public GtfsRealtime.FeedMessage getVehiclePositions() {
+        return this.gtfsRealtimeProvider.getVehiclePositions();
+    }
+
+    public GtfsRealtime.FeedMessage getTripUpdates() {
+        return this.gtfsRealtimeProvider.getTripUpdates();
     }
 
     /****

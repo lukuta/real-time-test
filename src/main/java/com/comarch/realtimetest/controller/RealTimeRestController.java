@@ -25,7 +25,8 @@ public class RealTimeRestController {
 
     @GetMapping("vehicles")
     public VehicleInfoDto getVehicles() {
-        GtfsRealtime.FeedMessage feedMessage = realTimeService.gtfsRealtimeProvider.getVehiclePositions();
+        GtfsRealtime.FeedMessage feedMessage = realTimeService.getVehiclePositions();
+
         List<VehiclePositionDto> vehiclePositionDtoList = new ArrayList<>();
         feedMessage.getEntityList().forEach(
                 feedEntity -> vehiclePositionDtoList.add(VehiclePositionDto.builder()
@@ -35,6 +36,7 @@ public class RealTimeRestController {
                         .build()
                 )
         );
+
         return VehicleInfoDto.builder()
                 .timestamp(feedMessage.getHeader().getTimestamp())
                 .vehicles(vehiclePositionDtoList)
@@ -43,6 +45,6 @@ public class RealTimeRestController {
 
     @GetMapping("trips")
     public GtfsRealtime.FeedMessage getTrips() {
-        return realTimeService.gtfsRealtimeProvider.getTripUpdates();
+        return realTimeService.getTripUpdates();
     }
 }
