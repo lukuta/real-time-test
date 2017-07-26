@@ -1,0 +1,39 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.4.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'http://nexus.onebusaway.org/content/groups/public/'
+	}
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile group: 'org.onebusaway', name: 'onebusaway-gtfs-realtime-api', version: '1.2.0'
+	compile group: 'org.onebusaway', name: 'onebusaway-gtfs-realtime-exporter', version: '1.1.0'
+	compile group: 'org.onebusaway', name: 'onebusaway-cli', version: '1.0.1'
+	compile group: 'org.onebusaway', name: 'onebusaway-guice-jsr250', version: '1.0.2'
+	compile group: 'org.json', name: 'json', version: '20090211'
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.0.0-beta-3'
+
+	compileOnly('org.projectlombok:lombok')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
